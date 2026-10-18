@@ -11,7 +11,7 @@ An enterprise-ready DevSecOps toolkit demonstrating how to combine **determinist
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
 - [Executive Summary](#executive-summary)
 - [Production Architecture: The Hybrid Triad](#production-architecture-the-hybrid-triad)
@@ -85,13 +85,13 @@ Our automated pipeline was executed against an intentionally vulnerable payment 
 
 | Deliverable | Description | Location |
 | :--- | :--- | :--- |
-| 📘 **Architecture Playbook (PDF)** | 4-page comprehensive technical guide evaluating tools, MCP, and AI architecture | [`docs/Kubernetes_AI_Vulnerability_Scanners_Playbook.pdf`](docs/Kubernetes_AI_Vulnerability_Scanners_Playbook.pdf) |
-| 📄 **Implementation Proof (PDF)** | 2-page executive evidence document with terminal scan outputs and verification metrics | [`docs/Milestone2_Kubernetes_AI_Vulnerability_Implementation.pdf`](docs/Milestone2_Kubernetes_AI_Vulnerability_Implementation.pdf) |
-| 📝 **Milestone 2 Evidence (MD)** | Complete technical markdown report of the local hands-on implementation | [`docs/Milestone2_Implementation_Evidence.md`](docs/Milestone2_Implementation_Evidence.md) |
-| 🛡️ **Vulnerable Test Manifest** | Real-world unhardened Kubernetes deployment manifest | [`manifests/vulnerable-production-app.yaml`](manifests/vulnerable-production-app.yaml) |
-| 🔒 **Hardened Manifest** | Production-ready, CIS-compliant remediated Kubernetes manifest | [`manifests/hardened-production-app.yaml`](manifests/hardened-production-app.yaml) |
-| ⚡ **AI Audit Orchestrator** | Python script automating Trivy/Kubescape ingestion and Ollama reasoning | [`scripts/audit_with_ai.py`](scripts/audit_with_ai.py) |
-| 📊 **Scan Evidence Logs** | Raw JSON and text execution logs from Trivy and Kubescape | [`evidence/`](evidence/) |
+| **Architecture Playbook (PDF)** | 4-page comprehensive technical guide evaluating tools, MCP, and AI architecture | [`docs/Kubernetes_AI_Vulnerability_Scanners_Playbook.pdf`](docs/Kubernetes_AI_Vulnerability_Scanners_Playbook.pdf) |
+| **Implementation Proof (PDF)** | 2-page executive evidence document with terminal scan outputs and verification metrics | [`docs/Milestone2_Kubernetes_AI_Vulnerability_Implementation.pdf`](docs/Milestone2_Kubernetes_AI_Vulnerability_Implementation.pdf) |
+| **Milestone 2 Evidence (MD)** | Complete technical markdown report of the local hands-on implementation | [`docs/Milestone2_Implementation_Evidence.md`](docs/Milestone2_Implementation_Evidence.md) |
+| **Vulnerable Test Manifest** | Real-world unhardened Kubernetes deployment manifest | [`manifests/vulnerable-production-app.yaml`](manifests/vulnerable-production-app.yaml) |
+| **Hardened Manifest** | Production-ready, CIS-compliant remediated Kubernetes manifest | [`manifests/hardened-production-app.yaml`](manifests/hardened-production-app.yaml) |
+| **AI Audit Orchestrator** | Python script automating Trivy/Kubescape ingestion and Ollama reasoning | [`scripts/audit_with_ai.py`](scripts/audit_with_ai.py) |
+| **Scan Evidence Logs** | Raw JSON and text execution logs from Trivy and Kubescape | [`evidence/`](evidence/) |
 
 ---
 
