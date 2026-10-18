@@ -41,29 +41,29 @@ This repository provides the complete implementation evidence demonstrating:
 
 All screenshots are stored in high-resolution PNG format in the [`screenshots/`](screenshots/) directory.
 
-### 1. Running Kubernetes Containers & Cluster Workloads
-Verification of active Kubernetes nodes, replica pods in the `production` namespace running across worker nodes with zero restarts, ClusterIP service mapping, and network isolation policies.  
+### 1. Baseline Workload & Container Vulnerability Scan
+Terminal capture of Aqua Trivy scanning the baseline unhardened deployment manifest (`manifests/vulnerable-production-app.yaml`), detecting high-severity misconfigurations including SYS_ADMIN capability (`KSV-0005`), hostPID sharing (`KSV-0010`), and writable root filesystem (`KSV-0014`).  
 [View Raw PNG Image](screenshots/01_k8s_running_containers_status.png)
 
-![Running Kubernetes Containers & Cluster Workloads](screenshots/01_k8s_running_containers_status.png)
+![Baseline Workload & Container Vulnerability Scan](screenshots/01_k8s_running_containers_status.png)
 
-### 2. Container Runtime & Hardened Security Context Deep-Dive
-Detailed inspection of container execution specifications verifying unprivileged execution (UID 10001), dropped Linux capabilities, immutable root filesystem, and health check probes.  
+### 2. Hardened Container Runtime & SecurityContext Inspection
+Terminal inspection of hardened container runtime specifications (`runAsNonRoot: true`, UID `10001`, `RuntimeDefault` seccomp profile, immutable root filesystem), followed by Trivy verification confirming 0 misconfigurations on the hardened workload.  
 [View Raw PNG Image](screenshots/02_container_runtime_security_inspection.png)
 
-![Container Runtime & Security Context Inspection](screenshots/02_container_runtime_security_inspection.png)
+![Hardened Container Runtime & Security Context Inspection](screenshots/02_container_runtime_security_inspection.png)
 
-### 3. K8sGPT Local AI Cluster Analysis & Trivy Verification
-Automated cluster interrogation using K8sGPT powered by a local Ollama backend (`llama3.2:1b`) confirming zero security defects in production alongside Trivy scan verification.  
+### 3. K8sGPT AI Integration & Local AI DevSecOps Pipeline
+Terminal capture showing K8sGPT configuration (`localai` active backend), automated ingestion of Trivy and Kubescape audit outputs, and Ollama (`llama3.2:1b`) generating root-cause threat modeling and exploit chain analysis for container breakout vectors.  
 [View Raw PNG Image](screenshots/03_k8sgpt_ai_live_cluster_audit.png)
 
-![K8sGPT AI Analysis & Trivy Verification](screenshots/03_k8sgpt_ai_live_cluster_audit.png)
+![K8sGPT AI Integration & Local AI DevSecOps Pipeline](screenshots/03_k8sgpt_ai_live_cluster_audit.png)
 
-### 4. Kubescape NSA & CIS Benchmark Compliance Report
-Comprehensive audit across NSA-CISA and MITRE ATT&CK frameworks verifying an 88% compliance score and complete resolution of node escape and privilege escalation controls.  
+### 4. Kubescape Framework & Compliance Scan
+Terminal capture of Kubescape auditing the Kubernetes manifest against CIS and NSA security frameworks, detailing failed controls across Resource Management (CPU/memory requests), Storage (HostPath mounts), and Node Escape (privilege escalation and namespace sharing).  
 [View Raw PNG Image](screenshots/04_kubescape_compliance_dashboard.png)
 
-![Kubescape NSA & CIS Compliance Scan Report](screenshots/04_kubescape_compliance_dashboard.png)
+![Kubescape Framework & Compliance Scan](screenshots/04_kubescape_compliance_dashboard.png)
 
 ---
 
@@ -256,13 +256,13 @@ k8s-ai-security-auditor/
 │   ├── vulnerable-production-app.yaml      # Baseline unhardened workload
 │   └── hardened-production-app.yaml        # Remediated production-ready workload
 ├── screenshots/
-│   ├── 01_k8s_running_containers_status.png              # Running pods, services, networkpolicy
-│   ├── 02_container_runtime_security_inspection.png      # Hardened container runtime & securityContext
-│   ├── 03_k8sgpt_ai_live_cluster_audit.png               # Local AI K8sGPT triage & Trivy scan
-│   └── 04_kubescape_compliance_dashboard.png             # Kubescape NSA & CIS 88% compliance report
+│   ├── 01_k8s_running_containers_status.png              # Baseline workload scan & Trivy findings
+│   ├── 02_container_runtime_security_inspection.png      # Hardened container runtime & zero-defect verification
+│   ├── 03_k8sgpt_ai_live_cluster_audit.png               # K8sGPT AI backend & Ollama DevSecOps pipeline
+│   └── 04_kubescape_compliance_dashboard.png             # Kubescape CIS & NSA control audit
 ├── scripts/
 │   ├── audit_with_ai.py                   # Automated AI auditing & reporting script
-│   └── render_screenshots.py              # Headless screenshot generation engine
+│   └── capture_terminal_evidence.sh       # Automated terminal evidence capture script
 ├── .gitignore
 └── README.md                              # Master documentation
 ```

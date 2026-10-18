@@ -172,16 +172,16 @@ Legend: 0: Clean (no security findings detected)
 
 ### 6. Live Cluster & Container Verification Screenshots
 
-* **1. Active Running Containers & Cluster Topology:**  
-  ![Running Containers](screenshots/01_k8s_running_containers_status.png)
+* **1. Baseline Workload & Container Vulnerability Scan:**  
+  ![Baseline Workload Scan](screenshots/01_k8s_running_containers_status.png)
 
-* **2. Container Runtime & Hardened Security Context:**  
+* **2. Hardened Container Runtime & SecurityContext Inspection:**  
   ![Security Context](screenshots/02_container_runtime_security_inspection.png)
 
-* **3. K8sGPT AI Cluster Analysis:**  
+* **3. K8sGPT AI Integration & Local AI DevSecOps Pipeline:**  
   ![K8sGPT Analysis](screenshots/03_k8sgpt_ai_live_cluster_audit.png)
 
-* **4. Kubescape Compliance Verification (88% Score):**  
+* **4. Kubescape Framework & Compliance Scan:**  
   ![Kubescape Compliance](screenshots/04_kubescape_compliance_dashboard.png)
 
 ---
