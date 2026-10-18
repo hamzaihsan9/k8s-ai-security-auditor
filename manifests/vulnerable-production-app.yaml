@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-processor-service
+  namespace: production
+  labels:
+    app.kubernetes.io/name: payment-processor
+    app.kubernetes.io/part-of: e-commerce-suite
+    env: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: payment-processor
+  template:
+    metadata:
+      labels:
+        app: payment-processor
+    spec:
+      hostPID: true
+      hostNetwork: false
+      containers:
+      - name: payment-api
+        image: nginx:1.14.0
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
+          runAsUser: 0
+          readOnlyRootFilesystem: false
+          capabilities:
+            add:
+              - SYS_ADMIN
+              - NET_ADMIN
+        env:
+        - name: DATABASE_URL
+          value: "postgres://admin:SuperSecretPassword123!@db.internal:5432/payments"
+        - name: STRIPE_API_SECRET
+          value: "MOCK_INSECURE_PAYMENT_KEY_EXPOSED_IN_ENV"
+        volumeMounts:
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
+        - name: host-root
+          mountPath: /host
+      volumes:
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+      - name: host-root
+        hostPath:
+          path: /
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-processor-service
+  namespace: production
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: payment-processor

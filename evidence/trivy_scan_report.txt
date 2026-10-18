@@ -1,0 +1,500 @@
+
+Report Summary
+
+┌────────────────────────────────┬────────────┬───────────────────┐
+│             Target             │    Type    │ Misconfigurations │
+├────────────────────────────────┼────────────┼───────────────────┤
+│ vulnerable-production-app.yaml │ kubernetes │        23         │
+└────────────────────────────────┴────────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+vulnerable-production-app.yaml (kubernetes)
+===========================================
+Tests: 122 (SUCCESSES: 99, FAILURES: 23)
+Failures: 23 (UNKNOWN: 0, LOW: 11, MEDIUM: 5, HIGH: 7, CRITICAL: 0)
+
+KSV-0001 (MEDIUM): Container 'payment-api' of Deployment 'payment-processor-service' should set 'securityContext.allowPrivilegeEscalation' to false
+════════════════════════════════════════════════════════════════════════════════
+A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.
+
+See https://avd.aquasec.com/misconfig/ksv-0001
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0003 (LOW): Container 'payment-api' of Deployment 'payment-processor-service' should add 'ALL' to 'securityContext.capabilities.drop'
+════════════════════════════════════════════════════════════════════════════════
+The container should drop all default capabilities and add only those that are needed for its execution.
+
+See https://avd.aquasec.com/misconfig/ksv-0003
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0004 (LOW): Container 'payment-api' of 'deployment' 'payment-processor-service' in 'production' namespace should set securityContext.capabilities.drop
+════════════════════════════════════════════════════════════════════════════════
+Security best practices require containers to run with minimal required capabilities.
+
+See https://avd.aquasec.com/misconfig/ksv-0004
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0005 (HIGH): Container 'payment-api' of Deployment 'payment-processor-service' should not include 'SYS_ADMIN' in 'securityContext.capabilities.add'
+════════════════════════════════════════════════════════════════════════════════
+SYS_ADMIN gives the processes running inside the container privileges that are equivalent to root.
+
+See https://avd.aquasec.com/misconfig/ksv-0005
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0006 (HIGH): Deployment 'payment-processor-service' should not specify '/var/run/docker.socker' in 'spec.template.volumes.hostPath.path'
+════════════════════════════════════════════════════════════════════════════════
+Mounting docker.sock from the host can give the container full root access to the host.
+
+See https://avd.aquasec.com/misconfig/ksv-0006
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:10-51
+────────────────────────────────────────────────────────────────────────────────
+  10 ┌ spec:
+  11 │   replicas: 3
+  12 │   selector:
+  13 │     matchLabels:
+  14 │       app: payment-processor
+  15 │   template:
+  16 │     metadata:
+  17 │       labels:
+  18 └         app: payment-processor
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0010 (HIGH): Deployment 'payment-processor-service' should not set 'spec.template.spec.hostPID' to true
+════════════════════════════════════════════════════════════════════════════════
+Sharing the host’s PID namespace allows visibility on host processes, potentially leaking information such as environment variables and configuration.
+
+See https://avd.aquasec.com/misconfig/ksv-0010
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:10-51
+────────────────────────────────────────────────────────────────────────────────
+  10 ┌ spec:
+  11 │   replicas: 3
+  12 │   selector:
+  13 │     matchLabels:
+  14 │       app: payment-processor
+  15 │   template:
+  16 │     metadata:
+  17 │       labels:
+  18 └         app: payment-processor
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0011 (LOW): Container 'payment-api' of Deployment 'payment-processor-service' should set 'resources.limits.cpu'
+════════════════════════════════════════════════════════════════════════════════
+Enforcing CPU limits prevents DoS via resource exhaustion.
+
+See https://avd.aquasec.com/misconfig/ksv-0011
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0012 (MEDIUM): Container 'payment-api' of Deployment 'payment-processor-service' should set 'securityContext.runAsNonRoot' to true
+════════════════════════════════════════════════════════════════════════════════
+Force the running image to run as a non-root user to ensure least privileges.
+
+See https://avd.aquasec.com/misconfig/ksv-0012
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0014 (HIGH): Container 'payment-api' of Deployment 'payment-processor-service' should set 'securityContext.readOnlyRootFilesystem' to true
+════════════════════════════════════════════════════════════════════════════════
+An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.
+
+See https://avd.aquasec.com/misconfig/ksv-0014
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0015 (LOW): Container 'payment-api' of Deployment 'payment-processor-service' should set 'resources.requests.cpu'
+════════════════════════════════════════════════════════════════════════════════
+When containers have resource requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.
+
+See https://avd.aquasec.com/misconfig/ksv-0015
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0016 (LOW): Container 'payment-api' of Deployment 'payment-processor-service' should set 'resources.requests.memory'
+════════════════════════════════════════════════════════════════════════════════
+When containers have memory requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.
+
+See https://avd.aquasec.com/misconfig/ksv-0016
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0017 (HIGH): Container 'payment-api' of Deployment 'payment-processor-service' should set 'securityContext.privileged' to false
+════════════════════════════════════════════════════════════════════════════════
+Privileged containers share namespaces with the host system and do not offer any security. They should be used exclusively for system containers that require high privileges.
+
+See https://avd.aquasec.com/misconfig/ksv-0017
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0018 (LOW): Container 'payment-api' of Deployment 'payment-processor-service' should set 'resources.limits.memory'
+════════════════════════════════════════════════════════════════════════════════
+Enforcing memory limits prevents DoS via resource exhaustion.
+
+See https://avd.aquasec.com/misconfig/ksv-0018
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0020 (LOW): Container 'payment-api' of Deployment 'payment-processor-service' should set 'securityContext.runAsUser' > 10000
+════════════════════════════════════════════════════════════════════════════════
+Force the container to run with user ID > 10000 to avoid conflicts with the host’s user table.
+
+See https://avd.aquasec.com/misconfig/ksv-0020
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0021 (LOW): Container 'payment-api' of Deployment 'payment-processor-service' should set 'securityContext.runAsGroup' > 10000
+════════════════════════════════════════════════════════════════════════════════
+Force the container to run with group ID > 10000 to avoid conflicts with the host’s user table.
+
+See https://avd.aquasec.com/misconfig/ksv-0021
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0022 (MEDIUM): Container 'payment-api' of Deployment 'payment-processor-service' should not set 'securityContext.capabilities.add'
+════════════════════════════════════════════════════════════════════════════════
+According to pod security standard 'Capabilities', capabilities beyond the default set must not be added.
+
+See https://avd.aquasec.com/misconfig/ksv-0022
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0023 (MEDIUM): Deployment 'payment-processor-service' should not set 'spec.template.volumes.hostPath'
+════════════════════════════════════════════════════════════════════════════════
+According to pod security standard 'HostPath Volumes', HostPath volumes must be forbidden.
+
+See https://avd.aquasec.com/misconfig/ksv-0023
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:10-51
+────────────────────────────────────────────────────────────────────────────────
+  10 ┌ spec:
+  11 │   replicas: 3
+  12 │   selector:
+  13 │     matchLabels:
+  14 │       app: payment-processor
+  15 │   template:
+  16 │     metadata:
+  17 │       labels:
+  18 └         app: payment-processor
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0030 (LOW): Either Pod or Container should set 'securityContext.seccompProfile.type' to 'RuntimeDefault'
+════════════════════════════════════════════════════════════════════════════════
+According to pod security standard 'Seccomp', the RuntimeDefault seccomp profile must be required, or allow specific additional profiles.
+
+See https://avd.aquasec.com/misconfig/ksv-0030
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0104 (MEDIUM): container "payment-api" of deployment "payment-processor-service" in "production" namespace should specify a seccomp profile
+════════════════════════════════════════════════════════════════════════════════
+A program inside the container can bypass Seccomp protection policies.
+
+See https://avd.aquasec.com/misconfig/ksv-0104
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0105 (LOW): securityContext.runAsUser should be set to a value greater than 0
+════════════════════════════════════════════════════════════════════════════════
+Containers should be forbidden from running with a root UID.
+
+See https://avd.aquasec.com/misconfig/ksv-0105
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:26-34
+────────────────────────────────────────────────────────────────────────────────
+  26 ┌         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 │           capabilities:
+  32 │             add:
+  33 │               - SYS_ADMIN
+  34 └               - NET_ADMIN
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0106 (LOW): container should drop all
+════════════════════════════════════════════════════════════════════════════════
+Containers must drop ALL capabilities, and are only permitted to add back the NET_BIND_SERVICE capability.
+
+See https://avd.aquasec.com/misconfig/ksv-0106
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:23-44
+────────────────────────────────────────────────────────────────────────────────
+  23 ┌       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 │           privileged: true
+  28 │           allowPrivilegeEscalation: true
+  29 │           runAsUser: 0
+  30 │           readOnlyRootFilesystem: false
+  31 └           capabilities:
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0118 (HIGH): deployment payment-processor-service in production namespace is using the default security context, which allows root privileges
+════════════════════════════════════════════════════════════════════════════════
+Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.
+
+See https://avd.aquasec.com/misconfig/ksv-0118
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:19-51
+────────────────────────────────────────────────────────────────────────────────
+  19 ┌     spec:
+  20 │       hostPID: true
+  21 │       hostNetwork: false
+  22 │       containers:
+  23 │       - name: payment-api
+  24 │         image: nginx:1.14.0
+  25 │         imagePullPolicy: IfNotPresent
+  26 │         securityContext:
+  27 └           privileged: true
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+
+KSV-0121 (HIGH): deployment payment-processor-service in production namespace shouldn't have volumes set to {"/"}
+════════════════════════════════════════════════════════════════════════════════
+HostPath present many security risks and as a security practice it is better to avoid critical host paths mounts.
+
+See https://avd.aquasec.com/misconfig/ksv-0121
+────────────────────────────────────────────────────────────────────────────────
+ vulnerable-production-app.yaml:10-51
+────────────────────────────────────────────────────────────────────────────────
+  10 ┌ spec:
+  11 │   replicas: 3
+  12 │   selector:
+  13 │     matchLabels:
+  14 │       app: payment-processor
+  15 │   template:
+  16 │     metadata:
+  17 │       labels:
+  18 └         app: payment-processor
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+

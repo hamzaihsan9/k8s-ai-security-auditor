@@ -1,0 +1,39 @@
+
+Report Summary
+
+┌──────────────────────────────┬────────────┬───────────────────┐
+│            Target            │    Type    │ Misconfigurations │
+├──────────────────────────────┼────────────┼───────────────────┤
+│ hardened-production-app.yaml │ kubernetes │         1         │
+└──────────────────────────────┴────────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+hardened-production-app.yaml (kubernetes)
+=========================================
+Tests: 100 (SUCCESSES: 99, FAILURES: 1)
+Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+KSV-0125 (MEDIUM): Container payment-api in deployment payment-processor-service (namespace: production) uses an image from an untrusted registry.
+════════════════════════════════════════════════════════════════════════════════
+Ensure that all containers use images only from trusted registry domains.
+
+See https://avd.aquasec.com/misconfig/ksv-0125
+────────────────────────────────────────────────────────────────────────────────
+ hardened-production-app.yaml:41-90
+────────────────────────────────────────────────────────────────────────────────
+  41 ┌       - name: payment-api
+  42 │         # Hardened: Modern unprivileged image
+  43 │         image: nginxinc/nginx-unprivileged:1.27-alpine
+  44 │         imagePullPolicy: IfNotPresent
+  45 │         securityContext:
+  46 │           privileged: false
+  47 │           allowPrivilegeEscalation: false
+  48 │           readOnlyRootFilesystem: true
+  49 └           runAsNonRoot: true
+  ..   
+────────────────────────────────────────────────────────────────────────────────
+
+

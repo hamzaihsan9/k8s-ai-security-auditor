@@ -1,0 +1,38 @@
+name: Kubernetes Security & IaC Vulnerability Audit
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  trivy-scan:
+    name: Trivy Manifest & Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Aqua Trivy Security Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: 'manifests/'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0' # Non-blocking for audit reports
+          format: 'table'
+
+  kubescape-audit:
+    name: Kubescape NSA & CIS Compliance Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Kubescape
+        uses: kubescape/github-action@main
+        with:
+          files: "manifests/hardened-production-app.yaml"
+          frameworks: "nsa,mitre"
+          failedThreshold: 10

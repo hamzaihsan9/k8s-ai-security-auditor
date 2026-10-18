@@ -1,0 +1,137 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: payment-secrets
+  namespace: production
+type: Opaque
+stringData:
+  database-url: "postgres://appuser:REDACTED_MANAGED_SECRET@db.internal:5432/payments"
+  stripe-api-secret: "MANAGED_SECRET_STORED_IN_K8S_SECRET"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-processor-service
+  namespace: production
+  labels:
+    app.kubernetes.io/name: payment-processor
+    app.kubernetes.io/part-of: e-commerce-suite
+    env: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: payment-processor
+  template:
+    metadata:
+      labels:
+        app: payment-processor
+    spec:
+      # Hardened: Removed hostPID and hostNetwork
+      hostPID: false
+      hostNetwork: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: payment-api
+        # Hardened: Modern unprivileged image
+        image: nginxinc/nginx-unprivileged:1.27-alpine
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10001
+          capabilities:
+            drop:
+              - ALL
+        # Hardened: Bound secrets rather than plaintext credentials
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: database-url
+        - name: STRIPE_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: stripe-api-secret
+        # Hardened: Explicit resource boundaries for reliability and DoS prevention
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        # Hardened: Probes for deployment reliability and zero-downtime rolling updates
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        # Hardened: Safe ephemeral in-memory storage for non-root runtime temp files
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: tmp-volume
+        emptyDir:
+          medium: Memory
+          sizeLimit: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-processor-service
+  namespace: production
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: payment-processor
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: payment-processor-netpol
+  namespace: production
+spec:
+  podSelector:
+    matchLabels:
+      app: payment-processor
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: api-gateway
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres-database
+    ports:
+    - protocol: TCP
+      port: 5432

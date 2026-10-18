@@ -1,0 +1,51 @@
+**Kubernetes Security Vulnerabilities Analysis**
+
+The provided Kubernetes security vulnerabilities detected in the production deployment manifest are:
+
+1. `KSV-0005`: SYS_ADMIN capability added
+2. `KSV-0006`: hostPath volume mounted with docker.sock
+3. `KSV-0010`: Access to host PID
+4. `KSV-0014`: Root file system is not read-only
+
+**Threat Vector & Exploit Chain**
+
+1. `KSV-0005`: SYS_ADMIN capability added
+   - Blast Radius: Privileged access to sensitive operations and commands.
+   - Exploit Chain:
+     * Attack: An attacker with privileged access can execute arbitrary code with elevated privileges.
+     * Vulnerability: The SYS_ADMIN capability is used to grant elevated privileges to the container.
+     * Exploitation: An attacker can use this capability to execute malicious code, such as installing malware or gaining control of the container.
+2. `KSV-0006`: hostPath volume mounted with docker.sock
+   - Blast Radius: Privileged access to sensitive operations and commands.
+   - Exploit Chain:
+     * Attack: An attacker with privileged access can access sensitive files and data on the host.
+     * Vulnerability: The hostPath volume is mounted with the docker.sock file, which provides read and write access to sensitive data.
+     * Exploitation: An attacker can use this vulnerability to access sensitive data, install malware, or perform other malicious activities.
+3. `KSV-0010`: Access to host PID
+   - Blast Radius: Privileged access to sensitive operations and commands.
+   - Exploit Chain:
+     * Attack: An attacker with privileged access can read and write to sensitive processes and data.
+     * Vulnerability: The `spec.template.spec.hostPID` field is used to grant privileged access to sensitive processes.
+     * Exploitation: An attacker can use this vulnerability to read and write to sensitive processes, potentially gaining control of the system.
+4. `KSV-0014`: Root file system is not read-only
+   - Blast Radius: Privileged access to sensitive operations and commands.
+   - Exploit Chain:
+     * Attack: An attacker with privileged access can write to and delete sensitive files and data on the root file system.
+     * Vulnerability: The root file system is not read-only, allowing an attacker to bypass security restrictions.
+     * Exploitation: An attacker can use this vulnerability to write to and delete sensitive files, potentially gaining control of the system.
+
+**Attack Scenario**
+
+An adversary can break out of this container to the host node using one of the following attack scenarios:
+
+1. **Privileged access exploitation**: An attacker with privileged access can execute arbitrary code with elevated privileges, potentially gaining control of the system.
+2. **Root file system exploitation**: An attacker can write to and delete sensitive files and data on the root file system, potentially gaining control of the system.
+3. **Container escape**: An attacker can use a vulnerability in the container's image or runtime to create a new container that is not isolated from the host node.
+
+**3-Step Hardening Mandate**
+
+To remediate these issues before deploying to production, follow these three steps:
+
+1. **Remove SYS_ADMIN capability**: Remove the SYS_ADMIN capability from the container's security context.
+2. **Disable hostPath volume**: Do not specify the /var/run/docker.socket path in the hostPath volume's specification.
+3. **Set hostPID to false**: Do not set the `spec.template.spec.hostPID` field to true.
