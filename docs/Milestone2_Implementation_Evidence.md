@@ -170,7 +170,23 @@ Legend: 0: Clean (no security findings detected)
 
 ---
 
-### 6. Local Artifacts & Verification Paths
+### 6. Live Cluster & Container Verification Screenshots
+
+* **1. Active Running Containers & Cluster Topology:**  
+  ![Running Containers](screenshots/01_k8s_running_containers_status.png)
+
+* **2. Container Runtime & Hardened Security Context:**  
+  ![Security Context](screenshots/02_container_runtime_security_inspection.png)
+
+* **3. K8sGPT AI Cluster Analysis:**  
+  ![K8sGPT Analysis](screenshots/03_k8sgpt_ai_live_cluster_audit.png)
+
+* **4. Kubescape Compliance Verification (88% Score):**  
+  ![Kubescape Compliance](screenshots/04_kubescape_compliance_dashboard.png)
+
+---
+
+### 7. Local Artifacts & Verification Paths
 
 All tools, scripts, and raw execution logs are archived and available locally:
 * **PoC Directory:** `/home/kali/k8s-ai-security-poc/`

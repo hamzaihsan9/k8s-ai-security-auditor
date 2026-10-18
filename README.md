@@ -14,6 +14,7 @@ An enterprise-ready DevSecOps toolkit demonstrating how to combine **determinist
 ## Table of Contents
 
 - [Executive Summary](#executive-summary)
+- [Live Implementation Screenshots](#live-implementation-screenshots)
 - [Production Architecture: The Hybrid Triad](#production-architecture-the-hybrid-triad)
 - [Before vs. After Security Matrix](#before-vs-after-security-matrix)
 - [Project Deliverables & Artifacts](#project-deliverables--artifacts)
@@ -33,6 +34,30 @@ This repository provides the complete implementation evidence demonstrating:
 1. **Deterministic Ground Truth:** Using Aqua Trivy and CNCF Kubescape to uncover 23 security misconfigurations and a 70.1% baseline compliance score on an unhardened production manifest.
 2. **Local AI Triage Layer:** Utilizing K8sGPT connected to an on-premises Ollama (`llama3.2:1b`) instance to model blast radius, identify container-to-host breakout vectors, and produce remediation rules.
 3. **Automated Workload Hardening:** Eliminating **100% of Trivy misconfigurations (23 &rarr; 0)** and elevating **Kubescape compliance to 88.0%** while resolving all node escape risks.
+
+---
+
+## Live Implementation Screenshots
+
+### 1. Running Kubernetes Containers & Cluster Workloads
+Verification of active Kubernetes nodes, replica pods in the `production` namespace running across worker nodes with zero restarts, ClusterIP service mapping, and network isolation policies.
+
+![Running Kubernetes Containers & Cluster Workloads](docs/screenshots/01_k8s_running_containers_status.png)
+
+### 2. Container Runtime & Hardened Security Context Deep-Dive
+Detailed inspection of container execution specifications verifying unprivileged execution (UID 10001), dropped Linux capabilities, immutable root filesystem, and health check probes.
+
+![Container Runtime & Security Context Inspection](docs/screenshots/02_container_runtime_security_inspection.png)
+
+### 3. K8sGPT Local AI Cluster Analysis & Trivy Verification
+Automated cluster interrogation using K8sGPT powered by a local Ollama backend (`llama3.2:1b`) confirming zero security defects in production alongside Trivy scan verification.
+
+![K8sGPT AI Analysis & Trivy Verification](docs/screenshots/03_k8sgpt_ai_live_cluster_audit.png)
+
+### 4. Kubescape NSA & CIS Benchmark Compliance Report
+Comprehensive audit across NSA-CISA and MITRE ATT&CK frameworks verifying an 88% compliance score and complete resolution of node escape and privilege escalation controls.
+
+![Kubescape NSA & CIS Compliance Scan Report](docs/screenshots/04_kubescape_compliance_dashboard.png)
 
 ---
 
